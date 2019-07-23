@@ -1,6 +1,10 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Home from "./views/Home.vue";
+import Admin from "./views/Admin.vue";
+import Overview from "./views/Overview.vue";
+import Promos from "./views/Promos.vue";
+import Profile from "./views/Profile.vue";
 
 Vue.use(Router);
 
@@ -12,6 +16,28 @@ export default new Router({
       path: "/",
       name: "home",
       component: Home
+    },
+    {
+      path: "/admin",
+      name: "admin",
+      component: Admin,
+      children:[
+        {
+          path: "overview",
+          name: "overview",
+          component: Overview
+        },
+        {
+          path: "promos",
+          name: "promos",
+          component: Promos
+        },
+        {
+          path: "profile",
+          name: "profile",
+          component: Profile
+        },
+      ]
     },
     {
       path: "/about",

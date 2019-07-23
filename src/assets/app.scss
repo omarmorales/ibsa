@@ -6,6 +6,10 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+@import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
+
+@import './admin.scss';
+
 h1, h2  {
     font-family: $font-family-sans-serif-open-sans;
 }
