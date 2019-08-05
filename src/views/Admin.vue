@@ -2,7 +2,7 @@
   <div class="admin">
       <div class="page-wrapper default-theme sidebar-bg bg1 toggled">
         <a id="show-sidebar" @click="closeMenu" class="btn btn-sm btn-dark" href="#">
-            <i class="fas fa-bars"></i>
+            <i class="fas fa-angle-right"></i>
         </a>
         <nav id="sidebar" class="sidebar-wrapper">
             <div class="sidebar-content">
@@ -10,7 +10,7 @@
                 <div class="sidebar-item sidebar-brand">
                     <a href="#">Abarrotes IBSA</a>
                     <div id="close-sidebar" @click="closeMenu">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-angle-left"></i>
                     </div>
                 </div>
                 <!-- sidebar-header  -->
@@ -110,6 +110,10 @@ export default {
             fb.auth().signOut()
             .then(() => {
                 this.$router.replace('/');
+                toast.fire({
+                    type: 'success',
+                    title: 'Session ended'
+                })
             })
             .catch((err) =>{
                 console.log(err);

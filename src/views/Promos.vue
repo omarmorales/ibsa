@@ -1,6 +1,12 @@
 <template>
     <div>
-        <h1 class="font-weight-bold">Promociones</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Promociones</li>
+            </ol>
+        </nav>
+        <h1 class="font-weight-bold text-center">Promociones</h1>
     </div>
 </template>
 
