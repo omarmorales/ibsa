@@ -82,18 +82,27 @@ export default {
         fb.auth().signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
             $('#login').modal('hide')
-            this.$router.replace('admin');  
+            toast.fire({
+                type: 'success',
+                title: 'Successfully logged in'
+            })
+            this.$router.replace('admin');
         })
         .catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
             if (errorCode === 'auth/wrong-password') {
-                alert('Wrong password.');
+                toast.fire({
+                    type: 'error',
+                    title: 'Wrong password'
+                })
             } else {
-                alert(errorMessage);
+                toast.fire({
+                    type: 'error',
+                    title: errorMessage
+                })
             }
-            console.log(error);
         });
     },
     register(){
@@ -101,17 +110,26 @@ export default {
         .then((user) => {
             $('#login').modal('hide')
             this.$router.replace('admin');
+            toast.fire({
+                type: 'success',
+                title: 'User registered successfully'
+            })
         })
         .catch(function(error) {
         // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode == 'auth/weak-password') {
-            alert('The password is too weak.');
-        } else {
-            alert(errorMessage);
-        }
-        console.log(error);
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            if (errorCode == 'auth/weak-password') {
+                toast.fire({
+                    type: 'error',
+                    title: 'Password is too weak'
+                })
+            } else {
+                toast.fire({
+                    type: 'error',
+                    title: errorMessage
+                })
+            }
         });
     }
   }
