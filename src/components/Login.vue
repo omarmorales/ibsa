@@ -78,27 +78,42 @@ export default {
       }
   },
   methods:{
-      login(){
-
-      },
-      register(){
-            fb.auth().createUserWithEmailAndPassword(this.email, this.password)
-            .then((user) => {
-                $('#login').modal('hide')
-                this.$router.replace('admin');
-            })
-            .catch(function(error) {
+    login(){
+        fb.auth().signInWithEmailAndPassword(this.email, this.password)
+        .then(() => {
+            $('#login').modal('hide')
+            this.$router.replace('admin');  
+        })
+        .catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
-            if (errorCode == 'auth/weak-password') {
-                alert('The password is too weak.');
+            if (errorCode === 'auth/wrong-password') {
+                alert('Wrong password.');
             } else {
                 alert(errorMessage);
             }
             console.log(error);
-            });
-      }
+        });
+    },
+    register(){
+        fb.auth().createUserWithEmailAndPassword(this.email, this.password)
+        .then((user) => {
+            $('#login').modal('hide')
+            this.$router.replace('admin');
+        })
+        .catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode == 'auth/weak-password') {
+            alert('The password is too weak.');
+        } else {
+            alert(errorMessage);
+        }
+        console.log(error);
+        });
+    }
   }
 };
 </script>
