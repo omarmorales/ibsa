@@ -16,7 +16,6 @@
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
-
                     <button class="btn btn-outline-success my-2 my-sm-0" type="button" data-toggle="modal" data-target="#login">Iniciar sesión</button>
                 </form>
             </div>

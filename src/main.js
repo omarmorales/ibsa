@@ -4,6 +4,8 @@ import router from "./router";
 import jQuery from 'jquery';
 import {fb}   from './firebase'
 
+window.Vue = require('vue');
+
 window.$ = window.jQuery = jQuery;
 
 import 'popper.js';
@@ -16,6 +18,13 @@ const toast = swal.mixin({
   position: 'top-end',
   showConfirmButton: false,
   timer: 3000
+});
+
+import VueProgressBar from 'vue-progressbar'
+Vue.use(VueProgressBar, {
+  color: 'rgb(143, 255, 199)',
+  failedColor: 'red',
+  height: '5px'
 });
 
 window.toast = toast;

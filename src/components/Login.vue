@@ -79,8 +79,10 @@ export default {
   },
   methods:{
     login(){
+        this.$Progress.start();
         fb.auth().signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
+            this.$Progress.finish();
             $('#login').modal('hide')
             toast.fire({
                 type: 'success',
@@ -97,12 +99,15 @@ export default {
                     type: 'error',
                     title: 'Wrong password'
                 })
+                this.$Progress.fail();
             } else {
                 toast.fire({
                     type: 'error',
                     title: errorMessage
                 })
+                this.$Progress.fail();
             }
+            this.$Progress.fail();
         });
     },
     register(){
