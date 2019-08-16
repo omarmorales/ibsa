@@ -17,27 +17,41 @@
         </div>
         <button @click="saveData" class="btn btn-primary">Agregar promoción</button>
         <h2 class="font-weight-bold mt-4">Lista de promociones</h2>
-        <table class="table mt-3">
-            <thead>
-                <tr>
-                    <th>Título</th>
-                    <th>Descripción</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="promo in promos" :key="promo.id">
-                    <td>{{ promo.title }}</td>
-                    <td>{{ promo.description }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table mt-3">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="promo in promos" :key="promo.id">
+                        <td>{{ promo.data().title }}</td>
+                        <td>{{ promo.data().description }}</td>
+                        <td>
+                            <button class="btn btn-primary">Editar</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" @click="deletePromo(promo.id)">Eliminar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
 <script>
     import {fb, db} from '../firebase'
     import { log } from 'util';
+    import swal from 'sweetalert2';
     export default {
+        components: {
+            swal
+        },
         data: () => ({
             promos: [],
             promo: {
@@ -46,10 +60,44 @@
             }
         }),
         methods: {
+            deletePromo(promo){
+                //alert(promo);
+
+                swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You will not be able to recover this imaginary file!',
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.value) {
+                        db.collection("promos").doc(promo).delete().then(function() {
+                            swal.fire(
+                                'Deleted!',
+                                'Your imaginary file has been deleted.',
+                                'success'
+                            )
+                        }).catch(function(error){
+                            swal.fire(
+                                'Error', 
+                                'Algo salió mal', 
+                                'warning'
+                            )
+                        })
+                    } else if (result.dismiss === swal.DismissReason.cancel) {
+                        swal.fire(
+                            'Cancelled',
+                            'Your imaginary file is safe :)',
+                            'error'
+                        )
+                    }
+                })
+            },
             loadData(){
                 db.collection("promos").get().then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
-                        this.promos.push(doc.data());
+                        this.promos.push(doc);
                     });
                 });
             },
@@ -63,7 +111,7 @@
                         title: 'Promoción creada correctamente'
                     })
                     console.log("Document written with ID: ", docRef.id);
-                    this.reset();
+                    this.loadData();
                 })
                 .catch((error) => {
                     this.$Progress.fail();

@@ -12,7 +12,7 @@ import 'popper.js';
 import 'bootstrap';
 import './assets/app.scss';
 
-import swal from 'sweetalert2'
+import swal from 'sweetalert2';
 const toast = swal.mixin({
   toast: true,
   position: 'top-end',
