@@ -32,7 +32,7 @@
                         <td>{{ promo.data().title }}</td>
                         <td>{{ promo.data().description }}</td>
                         <td>
-                            <button class="btn btn-primary">Editar</button>
+                            <button class="btn btn-primary" @click="editPromo(promo)">Editar</button>
                         </td>
                         <td>
                             <button class="btn btn-danger" @click="deletePromo(promo.id)">Eliminar</button>
@@ -40,6 +40,35 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="promoModal" tabindex="-1" role="dialog" aria-labelledby="promoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="promoModalLabel">Editar promoción</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="title">Título de la promoción</label>
+                            <input v-model="promo.title" type="text" class="form-control" id="title" aria-describedby="promo">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Descripción</label>
+                            <textarea v-model="promo.description" class="form-control" id="description"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" @click="updatePromo(promo.id)">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -57,25 +86,44 @@
             promo: {
                 title: null,
                 description: null,
-            }
+            },
+            activeItem: null
         }),
         methods: {
+            updatePromo(promo){
+                db.collection("promos").doc(this.activeItem).update(this.promo)
+                .then(function(){
+                    $('#promoModal').modal('hide');
+                    console.log("success");
+                    
+                }).catch(function(error){
+                    console.log("error: ", error);
+                    
+                })
+            },
+            editPromo(promo){
+                $('#promoModal').modal('show');
+
+                this.promo = promo.data();
+
+                this.activeItem = promo.id;
+            },
             deletePromo(promo){
                 //alert(promo);
 
                 swal.fire({
-                    title: 'Are you sure?',
-                    text: 'You will not be able to recover this imaginary file!',
+                    title: '¿Estás seguro?',
+                    text: 'No podrás recuperar este archivo',
                     type: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'No, keep it'
+                    confirmButtonText: 'Sí, bórralo',
+                    cancelButtonText: 'No'
                 }).then((result) => {
                     if (result.value) {
                         db.collection("promos").doc(promo).delete().then(function() {
                             swal.fire(
-                                'Deleted!',
-                                'Your imaginary file has been deleted.',
+                                '¡Eliminado!',
+                                'Su archivo ha sido eliminado.',
                                 'success'
                             )
                         }).catch(function(error){
@@ -87,8 +135,8 @@
                         })
                     } else if (result.dismiss === swal.DismissReason.cancel) {
                         swal.fire(
-                            'Cancelled',
-                            'Your imaginary file is safe :)',
+                            'Cancelado',
+                            'Tu archivo está seguro :)',
                             'error'
                         )
                     }
