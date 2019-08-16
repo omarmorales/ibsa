@@ -7,16 +7,7 @@
             </ol>
         </nav>
         <h1 class="font-weight-bold text-center">Promociones</h1>
-        <div class="form-group">
-            <label for="title">Título de la promoción</label>
-            <input v-model="promo.title" type="text" class="form-control" id="title" aria-describedby="promo">
-        </div>
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <textarea v-model="promo.description" class="form-control" id="description"></textarea>
-        </div>
-        <button @click="saveData" class="btn btn-primary">Agregar promoción</button>
-        <h2 class="font-weight-bold mt-4">Lista de promociones</h2>
+        <button @click="addPromo" class="btn btn-primary float-right">Agregar promoción</button>
         <div class="table-responsive">
             <table class="table mt-3">
                 <thead>
@@ -48,7 +39,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="promoModalLabel">Editar promoción</h5>
+                        <h5 class="modal-title" id="promoModalLabel">Promoción</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
@@ -62,10 +53,22 @@
                             <label for="description">Descripción</label>
                             <textarea v-model="promo.description" class="form-control" id="description"></textarea>
                         </div>
+                        <div class="form-group">
+                            <label for="price">Precio</label>
+                            <input v-model="promo.price" type="text" class="form-control" id="price">
+                        </div>
+                        <div class="form-group">
+                            <label for="tag">Etiqueta</label>
+                            <input v-model="promo.tag" type="text" class="form-control" id="tag">
+                        </div>
+                        <div class="form-group">
+                            <label for="product_image">Imágen</label>
+                            <input @change="updateImage()" type="file" class="form-control">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-primary" @click="updatePromo(promo.id)">Guardar cambios</button>
+                        <button type="button" class="btn btn-primary" @click="savePromo(promo.id)">Guardar cambios</button>
                     </div>
                 </div>
             </div>
@@ -82,26 +85,32 @@
             swal
         },
         data: () => ({
+            editmode: false,
             promos: [],
             promo: {
                 title: null,
                 description: null,
+                price: null,
+                tag: null,
+                image: null
             },
             activeItem: null
         }),
+        firestore(){
+            return {
+                promos: db.collection('promos'),
+            }
+        },
         methods: {
+            uploadImage(){
+
+            },
             updatePromo(promo){
-                db.collection("promos").doc(this.activeItem).update(this.promo)
-                .then(function(){
-                    $('#promoModal').modal('hide');
-                    console.log("success");
-                    
-                }).catch(function(error){
-                    console.log("error: ", error);
-                    
-                })
+
             },
             editPromo(promo){
+                this.editmode = true;
+
                 $('#promoModal').modal('show');
 
                 this.promo = promo.data();
@@ -109,48 +118,18 @@
                 this.activeItem = promo.id;
             },
             deletePromo(promo){
-                //alert(promo);
 
-                swal.fire({
-                    title: '¿Estás seguro?',
-                    text: 'No podrás recuperar este archivo',
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, bórralo',
-                    cancelButtonText: 'No'
-                }).then((result) => {
-                    if (result.value) {
-                        db.collection("promos").doc(promo).delete().then(function() {
-                            swal.fire(
-                                '¡Eliminado!',
-                                'Su archivo ha sido eliminado.',
-                                'success'
-                            )
-                        }).catch(function(error){
-                            swal.fire(
-                                'Error', 
-                                'Algo salió mal', 
-                                'warning'
-                            )
-                        })
-                    } else if (result.dismiss === swal.DismissReason.cancel) {
-                        swal.fire(
-                            'Cancelado',
-                            'Tu archivo está seguro :)',
-                            'error'
-                        )
-                    }
-                })
             },
             loadData(){
-                db.collection("promos").get().then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        this.promos.push(doc);
-                    });
-                });
+
             },
-            saveData() {
-                this.$Progress.start();
+            addPromo(){
+                this.editmode = false;
+                $('#promoModal').modal('show');
+            },
+            savePromo() {
+                this.$firestore.promos.add(this.promo)
+/*                 this.$Progress.start();
                 db.collection('promos').add(this.promo)
                 .then((docRef) => {
                     this.$Progress.finish();
@@ -168,10 +147,10 @@
                         title: 'Error al crear promoción'
                     })
                     console.log("Error adding document ", error);
-                });
+                }); */
             },
             reset(){
-                Object.assign(this.$data, this.$options.data.apply(this));
+
             }
         },
         created(){
