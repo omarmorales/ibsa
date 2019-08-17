@@ -16,6 +16,7 @@ import 'bootstrap';
 import './assets/app.scss';
 
 import swal from 'sweetalert2';
+window.swal = swal;
 const toast = swal.mixin({
   toast: true,
   position: 'top-end',

@@ -20,13 +20,13 @@
                 </thead>
                 <tbody>
                     <tr v-for="promo in promos" :key="promo.id">
-                        <td>{{ promo.data().title }}</td>
-                        <td>{{ promo.data().description }}</td>
+                        <td>{{ promo.title }}</td>
+                        <td>{{ promo.description }}</td>
                         <td>
-                            <button class="btn btn-primary" @click="editPromo(promo)">Editar</button>
+                            <button class="btn btn-primary" @click="editPromo()">Editar</button>
                         </td>
                         <td>
-                            <button class="btn btn-danger" @click="deletePromo(promo.id)">Eliminar</button>
+                            <button class="btn btn-danger" @click="deletePromo(promo)">Eliminar</button>
                         </td>
                     </tr>
                 </tbody>
@@ -68,7 +68,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-primary" @click="savePromo(promo.id)">Guardar cambios</button>
+                        <button type="button" class="btn btn-primary" @click="savePromo(promo)">Guardar cambios</button>
                     </div>
                 </div>
             </div>
@@ -79,11 +79,7 @@
 <script>
     import {fb, db} from '../firebase'
     import { log } from 'util';
-    import swal from 'sweetalert2';
     export default {
-        components: {
-            swal
-        },
         data: () => ({
             editmode: false,
             promos: [],
@@ -118,7 +114,23 @@
                 this.activeItem = promo.id;
             },
             deletePromo(promo){
-
+                swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+                        this.$firestore.promos.doc(promo['.key']).delete()
+                        toast.fire({
+                            type: 'success',
+                            title: 'Deleted successfully'
+                        })
+                    }
+                })
             },
             loadData(){
 
@@ -128,7 +140,12 @@
                 $('#promoModal').modal('show');
             },
             savePromo() {
-                this.$firestore.promos.add(this.promo)
+                this.$firestore.promos.add(this.promo);
+                $('#promoModal').modal('hide');
+                toast.fire({
+                    type: 'success',
+                    title: 'Created successfully'
+                })
 /*                 this.$Progress.start();
                 db.collection('promos').add(this.promo)
                 .then((docRef) => {
