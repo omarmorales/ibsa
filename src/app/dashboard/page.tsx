@@ -1,4 +1,5 @@
 "use client";
+// FIXME: Move the products functionality to a separate file
 
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -287,6 +288,7 @@ const Page = () => {
         </form>
       </Form>
 
+      // TODO: Add pagination to products list
       <Table>
         <TableHeader>
           <TableRow>

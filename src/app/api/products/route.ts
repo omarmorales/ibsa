@@ -22,6 +22,8 @@ export async function POST(req: Request) {
     }
 }
 
+// TODO: Add Atlas search functionality
+// TODO: Add pagination functionality
 export async function GET(req: Request) {
     try {
         const products = await prisma.product.findMany();
