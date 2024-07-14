@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  key         String   @unique
+  description String?
+  iva         Float?
+  ieps        Float?
+  isr         Float?
+  sku         String
+  price       Float
+  p1          Float?
+  p2          Float?
+  p3          Float?
+  p4          Float?
+  p5          Float?
+  c1          Float?
+  c2          Float?
+  c3          Float?
+  c4          Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lineId      String?
+  line        Line?    @relation(fields: [lineId], references: [id])
+  unitId      String?
+  unit        Unit?    @relation(fields: [unitId], references: [id])
+}
+
+model Unit {
+  id          String    @id @default(cuid()) @map("_id")
+  name        String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Line {
+  id          String    @id @default(cuid()) @map("_id")
+  name        String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
