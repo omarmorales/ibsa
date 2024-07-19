@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,45 +32,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toaster";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCaption,
-} from "@/components/ui/table";
-
 interface Product {
   key: string;
   name: string;
   price: number;
-  // add other properties as needed
 }
 
 const Page = () => {
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const [products, setProducts] = useState<Product[]>([]);
-
-  const allProducts = async () => {
-    setIsLoading(true);
-    try {
-      const res = await axios.get("/api/products");
-
-      setProducts(res.data);
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    allProducts();
-  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -287,28 +257,6 @@ const Page = () => {
           </div>
         </form>
       </Form>
-
-      // TODO: Add pagination to products list
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Clave</TableHead>
-            <TableHead>Nombre del producto</TableHead>
-            <TableHead className="text-right">Precio</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {
-            products.map((product, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{ product.key.toUpperCase() }</TableCell>
-                <TableCell>{ product.name }</TableCell>
-                <TableCell className="text-right">{product.price}</TableCell>
-              </TableRow>
-            ))
-          }
-        </TableBody>
-      </Table>
       <Toaster />
     </MaxWidthWrapper>
   );
