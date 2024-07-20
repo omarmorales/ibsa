@@ -84,7 +84,7 @@ const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [metadata, setMetadata] = useState<any>(null);
   const limit = 10;
-  const { toast } = useToast();
+  const { toast }: { toast: any } = useToast();
   const [open, setOpen] = useState(false)
 
   const allProducts = async () => {
