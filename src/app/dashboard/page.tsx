@@ -1,6 +1,7 @@
 "use client";
 // FIXME: Move the products functionality to a separate file
-
+// TODO: Create a responsive sidenav here in the dashboard so the user can move between pages
+// TODO: User and Admin functionalities
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
@@ -92,7 +93,7 @@ const Page = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="lg:grid lg:grid-cols-12 lg:gap-x-0 xl:gap-x-8 "
+          className="lg:grid lg:grid-cols-12 lg:gap-x-5 xl:gap-x-8 "
         >
           <FormField
             control={form.control}

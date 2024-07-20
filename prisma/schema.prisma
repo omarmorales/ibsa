@@ -13,6 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// TODO: Verify model fields
+// TODO: Verify model relations
 model Product {
   id          String   @id @default(cuid()) @map("_id")
   name        String

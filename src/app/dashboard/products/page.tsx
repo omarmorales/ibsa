@@ -1,3 +1,6 @@
+// TODO: Edit products
+// TODO: Delete products
+// TODO: Search filter by key and name
 "use client";
 
 import { useEffect, useState } from "react";
@@ -22,9 +25,47 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+
+import { Button } from "@/components/ui/button";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { useRouter } from "next/router";
 import { Half2Icon } from "@radix-ui/react-icons";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { formSchema } from "../formSchema";
+
+import { selectOptions } from "../selectOptions";
 
 interface Product {
   id: number;
@@ -42,7 +83,6 @@ const Products: React.FC = () => {
   const allProducts = async () => {
     setIsLoading(true);
     try {
-      // http://localhost:3000/api/products?limit=2&page=1&include=metadata
       const res = await axios.get(
         `/api/products?limit=${limit}&page=1&include=metadata`
       );
@@ -90,9 +130,218 @@ const Products: React.FC = () => {
     setMetadata(res.data.metadata);
   };
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("es-MX", {
+      style: "currency",
+      currency: "MXN",
+    }).format(value);
+  };
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      key: "",
+      description: "",
+      iva: 0,
+      ieps: 0,
+      isr: 0,
+      sku: "",
+      price: 0,
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("values", values);
+  };
+
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
-      <h1>Products</h1>
+      <h1 className="text-2xl mb-2">Productos</h1>
+
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button variant="outline">Nuevo producto</Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Nuevo producto</DrawerTitle>
+            <DrawerDescription>Agrega la siguiente informacion de tu producto</DrawerDescription>
+          </DrawerHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="lg:grid lg:grid-cols-12 lg:gap-x-5 xl:gap-x-8 p-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="col-span-4">
+                      <FormLabel>Nombre del producto</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="key"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3">
+                      <FormLabel>Clave del producto</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem className="col-span-6">
+                      <FormLabel>Descripción del producto</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="iva"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>IVA</FormLabel>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                        defaultValue={String(field.value)}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {selectOptions.iva.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="ieps"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>IEPS</FormLabel>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                        defaultValue={String(field.value)}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {selectOptions.ieps.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="isr"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>ISR</FormLabel>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                        defaultValue={String(field.value)}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {selectOptions.isr.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="sku"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3">
+                      <FormLabel>SKU</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3">
+                      <FormLabel>Precio de compra</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <DrawerFooter>
+                <Button type="submit">Crear</Button>
+                <DrawerClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </form>
+          </Form>
+        </DrawerContent>
+      </Drawer>
 
       {isLoading ? (
         [...Array(10)].map((_, i) => (
@@ -104,7 +353,6 @@ const Products: React.FC = () => {
         ))
       ) : (
         <>
-          {/* TODO: Add pagination to products list */}
           <Table>
             <TableHeader>
               <TableRow>
@@ -116,9 +364,13 @@ const Products: React.FC = () => {
             <TableBody>
               {products.map((product, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-medium">{product.key}</TableCell>
+                  <TableCell className="font-medium uppercase">
+                    {product.key}
+                  </TableCell>
                   <TableCell>{product.name}</TableCell>
-                  <TableCell className="text-right">{product.price}</TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(product.price)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
