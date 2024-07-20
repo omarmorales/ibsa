@@ -4,7 +4,6 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Package } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/connect";
-import { Metadata } from "next";
 
 export async function getServerSideData() {
   const totalProducts = await prisma.product.count();
@@ -19,7 +18,11 @@ const Page = async () => {
       <h1 className="text-2xl mb-2">Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <Link
+          href="/dashboard/products"
+          className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="View all products"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-x-5">
               <Package className="h-10 w-10 shrink-0" />
@@ -29,12 +32,7 @@ const Page = async () => {
               </div>
             </div>
           </div>
-          <div className="mt-2">
-            <Link href="/dashboard/products" className="text-blue-500">
-              Ver todos
-            </Link>
-          </div>
-        </div>
+        </Link>
 
         <div className="bg-white p-4 rounded-lg shadow-md">
           <div className="flex justify-between items-center">
@@ -43,9 +41,6 @@ const Page = async () => {
               <div className="text-2xl font-bold">24.57%</div>
             </div>
             <div className="text-red-500 text-lg">-3.2%</div>
-          </div>
-          <div className="mt-2 text-blue-500">
-            <Link href="/dashboard/click-rate">View all</Link>
           </div>
         </div>
       </div>
