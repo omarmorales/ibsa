@@ -171,19 +171,19 @@ const Products: React.FC = () => {
       if (res.data.error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
+          title: "¡Oh! Algo salió mal.",
+          description: "Hubo un problema al crear el producto.",
         });
       } else {
         toast({
           title: "Product created!",
-          description: "Your product has been successfully created.",
+          description: "El producto ha sido creado exitosamente.",
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
+        title: "¡Oh! Algo salió mal.",
       });
     }
   };
