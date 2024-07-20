@@ -1,6 +1,7 @@
 // TODO: Edit products
 // TODO: Delete products
 // TODO: Search filter by key and name
+// TODO: Toaster componnet should be available across the app
 "use client";
 
 import { useEffect, useState } from "react";
@@ -67,6 +68,10 @@ import { formSchema } from "../formSchema";
 
 import { selectOptions } from "../selectOptions";
 
+import { useToast } from "@/components/ui/use-toast";
+
+import { Toaster } from "@/components/ui/toaster";
+
 interface Product {
   id: number;
   name: string;
@@ -78,7 +83,9 @@ const Products: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [metadata, setMetadata] = useState<any>(null);
-  const limit = 5;
+  const limit = 10;
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false)
 
   const allProducts = async () => {
     setIsLoading(true);
@@ -152,14 +159,41 @@ const Products: React.FC = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("values", values);
+    try {
+      const res = await axios.post("/api/products", values);
+
+      if (res.status === 200) {
+        setProducts(prevProducts => [...prevProducts, res.data]);
+        form.reset(); // reset the form
+        setOpen(false); // close the drawer
+      }
+
+      if (res.data.error) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with your request.",
+        });
+      } else {
+        toast({
+          title: "Product created!",
+          description: "Your product has been successfully created.",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+      });
+    }
   };
 
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
       <h1 className="text-2xl mb-2">Productos</h1>
 
-      <Drawer>
+      {/* Drawer starts */}
+      <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <Button variant="outline">Nuevo producto</Button>
         </DrawerTrigger>
@@ -342,8 +376,10 @@ const Products: React.FC = () => {
           </Form>
         </DrawerContent>
       </Drawer>
+      {/* Drawer ends  */}
 
       {isLoading ? (
+        // Skeleton starts
         [...Array(10)].map((_, i) => (
           <div key={i} className="flex space-x-4 p-1.5">
             <Skeleton className="h-6 w-1/6" />
@@ -351,8 +387,10 @@ const Products: React.FC = () => {
             <Skeleton className="h-6 w-1/6" />
           </div>
         ))
+        // Skeleton ends
       ) : (
         <>
+          {/* Products data starts */}
           <Table>
             <TableHeader>
               <TableRow>
@@ -375,6 +413,9 @@ const Products: React.FC = () => {
               ))}
             </TableBody>
           </Table>
+          {/* Products data ends */}
+
+          {/* Pagination starts */}
           {metadata && (
             <Pagination className="pt-5">
               <PaginationContent>
@@ -403,8 +444,10 @@ const Products: React.FC = () => {
               </PaginationContent>
             </Pagination>
           )}
+          {/* Pagination ends */}
         </>
       )}
+      <Toaster />
     </MaxWidthWrapper>
   );
 };
