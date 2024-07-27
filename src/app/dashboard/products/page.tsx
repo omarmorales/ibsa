@@ -3,7 +3,7 @@
 // TODO: Toaster componnet should be available across the app
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 import {
@@ -85,10 +85,10 @@ const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [metadata, setMetadata] = useState<any>(null);
   const limit = 10;
-  const { toast }: { toast: any } = useToast();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
-  const allProducts = async () => {
+  const allProducts = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await axios.get(
@@ -96,54 +96,69 @@ const Products: React.FC = () => {
       );
       setProducts(res.data.products);
       setMetadata(res.data.metadata);
-      setIsLoading(false);
     } catch (error) {
+      console.error("Failed to fetch products", error);
+    } finally {
       setIsLoading(false);
     }
-  };
+  }, [limit]);
 
   useEffect(() => {
     allProducts();
-  }, []);
+  }, [allProducts]);
 
-  const handlePreviousClick = async () => {
+  const handlePreviousClick = useCallback(async () => {
     if (metadata.page > 1) {
-      const res = await axios.get(
-        `/api/products?limit=${limit}&page=${
-          metadata.page - 1
-        }&include=metadata`
-      );
-      setProducts(res.data.products);
-      setMetadata(res.data.metadata);
+      try {
+        const res = await axios.get(
+          `/api/products?limit=${limit}&page=${
+            metadata.page - 1
+          }&include=metadata`
+        );
+        setProducts(res.data.products);
+        setMetadata(res.data.metadata);
+      } catch (error) {
+        console.error("Failed to fetch previous page", error);
+      }
     }
-  };
+  }, [metadata, limit]);
 
-  const handleNextClick = async () => {
+  const handleNextClick = useCallback(async () => {
     if (metadata.page < metadata.page_count) {
-      const res = await axios.get(
-        `/api/products?limit=${limit}&page=${
-          metadata.page + 1
-        }&include=metadata`
-      );
-      setProducts(res.data.products);
-      setMetadata(res.data.metadata);
+      try {
+        const res = await axios.get(
+          `/api/products?limit=${limit}&page=${
+            metadata.page + 1
+          }&include=metadata`
+        );
+        setProducts(res.data.products);
+        setMetadata(res.data.metadata);
+      } catch (error) {
+        console.error("Failed to fetch next page", error);
+      }
     }
-  };
+  }, [metadata, limit]);
 
-  const handlePageClick = async (page: number) => {
-    const res = await axios.get(
-      `/api/products?limit=${limit}&page=${page}&include=metadata`
-    );
-    setProducts(res.data.products);
-    setMetadata(res.data.metadata);
-  };
+  const handlePageClick = useCallback(
+    async (page: number) => {
+      try {
+        const res = await axios.get(
+          `/api/products?limit=${limit}&page=${page}&include=metadata`
+        );
+        setProducts(res.data.products);
+        setMetadata(res.data.metadata);
+      } catch (error) {
+        console.error(`Failed to fetch page ${page}`, error);
+      }
+    },
+    [limit]
+  );
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("es-MX", {
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("es-MX", {
       style: "currency",
       currency: "MXN",
     }).format(value);
-  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -159,56 +174,61 @@ const Products: React.FC = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const res = await axios.post("/api/products", values);
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      try {
+        const res = await axios.post("/api/products", values);
 
-      if (res.status === 200) {
-        setProducts((prevProducts) => [...prevProducts, res.data]);
-        form.reset(); // reset the form
-        setOpen(false); // close the drawer
-      }
-
-      if (res.data.error) {
+        if (res.status === 200) {
+          setProducts((prevProducts) => [...prevProducts, res.data]);
+          form.reset(); // reset the form
+          setOpen(false); // close the drawer
+          toast({
+            title: "Product created!",
+            description: "El producto ha sido creado exitosamente.",
+          });
+        } else if (res.data.error) {
+          toast({
+            variant: "destructive",
+            title: "¡Oh! Algo salió mal.",
+            description: "Hubo un problema al crear el producto.",
+          });
+        }
+      } catch (error) {
         toast({
           variant: "destructive",
           title: "¡Oh! Algo salió mal.",
-          description: "Hubo un problema al crear el producto.",
         });
-      } else {
-        toast({
-          title: "Product created!",
-          description: "El producto ha sido creado exitosamente.",
-        });
+        console.error("Failed to create product", error);
       }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "¡Oh! Algo salió mal.",
-      });
-    }
-  };
+    },
+    [toast, form]
+  );
 
-  const deleteProduct = async (id: string) => {
-    try {
-      const res = await axios.delete(`/api/products/${id}`);
-      if (res.status === 200) {
+  const deleteProduct = useCallback(
+    async (id: string) => {
+      try {
+        const res = await axios.delete(`/api/products/${id}`);
+        if (res.status === 200) {
+          toast({
+            title: "Producto eliminado",
+            description: "El producto ha sido eliminado exitosamente",
+          });
+          setProducts((prevProducts) =>
+            prevProducts.filter((product) => product.id !== id)
+          );
+        }
+      } catch (error) {
         toast({
-          title: "Producto eliminado",
-          description: "El producto ha sido eliminado exitosamente",
+          variant: "destructive",
+          title: "¡Oh! Algo salió mal.",
+          description: "Hubo un problema al eliminar el producto.",
         });
-        setProducts((prevProducts) =>
-          prevProducts.filter((product) => product.id !== id)
-        );
+        console.error("Failed to delete product", error);
       }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "¡Oh! Algo salió mal.",
-        description: "Hubo un problema al eliminar el producto.",
-      });
-    }
-  };
+    },
+    [toast]
+  );
 
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
@@ -217,9 +237,8 @@ const Products: React.FC = () => {
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <Button className="fixed right-4 bottom-4 md:right-6 md:bottom-6 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center">
-            <Plus></Plus>
+            <Plus />
           </Button>
-          {/* <Button variant="outline">Nuevo producto</Button> */}
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
@@ -427,8 +446,8 @@ const Products: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product, index) => (
-                <TableRow key={index}>
+              {products.map((product) => (
+                <TableRow key={product.id}>
                   <TableCell className="font-medium uppercase">
                     {product.key}
                   </TableCell>
