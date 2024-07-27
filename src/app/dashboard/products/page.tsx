@@ -1,5 +1,4 @@
 // TODO: Edit products
-// TODO: Delete products
 // TODO: Search filter by key and name
 // TODO: Toaster componnet should be available across the app
 "use client";
@@ -72,8 +71,10 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { Toaster } from "@/components/ui/toaster";
 
+import { Trash, Plus } from "lucide-react";
+
 interface Product {
-  id: number;
+  id: string;
   name: string;
   key: string;
   price: number;
@@ -85,7 +86,7 @@ const Products: React.FC = () => {
   const [metadata, setMetadata] = useState<any>(null);
   const limit = 10;
   const { toast }: { toast: any } = useToast();
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const allProducts = async () => {
     setIsLoading(true);
@@ -163,7 +164,7 @@ const Products: React.FC = () => {
       const res = await axios.post("/api/products", values);
 
       if (res.status === 200) {
-        setProducts(prevProducts => [...prevProducts, res.data]);
+        setProducts((prevProducts) => [...prevProducts, res.data]);
         form.reset(); // reset the form
         setOpen(false); // close the drawer
       }
@@ -188,19 +189,44 @@ const Products: React.FC = () => {
     }
   };
 
+  const deleteProduct = async (id: string) => {
+    try {
+      const res = await axios.delete(`/api/products/${id}`);
+      if (res.status === 200) {
+        toast({
+          title: "Producto eliminado",
+          description: "El producto ha sido eliminado exitosamente",
+        });
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.id !== id)
+        );
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "¡Oh! Algo salió mal.",
+        description: "Hubo un problema al eliminar el producto.",
+      });
+    }
+  };
+
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
       <h1 className="text-2xl mb-2">Productos</h1>
-
       {/* Drawer starts */}
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button variant="outline">Nuevo producto</Button>
+          <Button className="fixed right-4 bottom-4 md:right-6 md:bottom-6 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center">
+            <Plus></Plus>
+          </Button>
+          {/* <Button variant="outline">Nuevo producto</Button> */}
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>Nuevo producto</DrawerTitle>
-            <DrawerDescription>Agrega la siguiente informacion de tu producto</DrawerDescription>
+            <DrawerDescription>
+              Agrega la siguiente informacion de tu producto
+            </DrawerDescription>
           </DrawerHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -387,8 +413,8 @@ const Products: React.FC = () => {
             <Skeleton className="h-6 w-1/6" />
           </div>
         ))
-        // Skeleton ends
       ) : (
+        // Skeleton ends
         <>
           {/* Products data starts */}
           <Table>
@@ -397,6 +423,7 @@ const Products: React.FC = () => {
                 <TableHead className="w-[100px]">Clave</TableHead>
                 <TableHead>Nombre del producto</TableHead>
                 <TableHead className="text-right">Precio</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -408,6 +435,14 @@ const Products: React.FC = () => {
                   <TableCell>{product.name}</TableCell>
                   <TableCell className="text-right">
                     {formatCurrency(product.price)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant="ghost"
+                      onClick={() => deleteProduct(product.id)}
+                    >
+                      <Trash size={20} />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
