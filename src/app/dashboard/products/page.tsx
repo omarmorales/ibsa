@@ -1,6 +1,7 @@
 // TODO: Edit products
 // TODO: Search filter by key and name
 // TODO: Toaster componnet should be available across the app
+// TODO: Only authenticated users should be able to access this page
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
@@ -55,6 +56,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Half2Icon } from "@radix-ui/react-icons";
@@ -456,12 +469,27 @@ const Products: React.FC = () => {
                     {formatCurrency(product.price)}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Button
-                      variant="ghost"
-                      onClick={() => deleteProduct(product.id)}
-                    >
-                      <Trash size={20} />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Trash size={20} />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            ¿Estás absolutamente seguro?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Esto eliminará
+                            permanentemente este producto y eliminará sus datos
+                            de nuestros servidores.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => deleteProduct(product.id)}>Eliminar</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}
