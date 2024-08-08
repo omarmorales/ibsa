@@ -69,8 +69,23 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Half2Icon } from "@radix-ui/react-icons";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -84,7 +99,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { Toaster } from "@/components/ui/toaster";
 
-import { Trash, Plus } from "lucide-react";
+import { Trash, Plus, Pencil } from "lucide-react";
 
 interface Product {
   id: string;
@@ -245,7 +260,20 @@ const Products: React.FC = () => {
 
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
-      <h1 className="text-2xl mb-2">Productos</h1>
+      {/* Breadcrumb starts */}
+      <Breadcrumb className="mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Productos</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      {/* Breadcrumb ends */}
+
       {/* Drawer starts */}
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
@@ -433,102 +461,124 @@ const Products: React.FC = () => {
             </form>
           </Form>
         </DrawerContent>
+
+        {isLoading ? (
+          // Skeleton starts
+          [...Array(10)].map((_, i) => (
+            <div key={i} className="flex space-x-4 p-1.5">
+              <Skeleton className="h-6 w-1/6" />
+              <Skeleton className="h-6 w-4/6" />
+              <Skeleton className="h-6 w-1/6" />
+            </div>
+          ))
+        ) : (
+          // Skeleton ends
+          <>
+            {/* Search bar starts */}
+            <div className="flex w-full max-w-sm items-center space-x-2 mb-5">
+              <Input type="text" placeholder="Buscar producto" />
+              {/* <Button type="submit">Buscar</Button> */}
+            </div>
+            {/* Search bar ends */}
+
+            {/* Products data starts */}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Clave</TableHead>
+                  <TableHead>Nombre del producto</TableHead>
+                  <TableHead className="text-right">Precio</TableHead>
+                  <TableHead className="w-[50px]"></TableHead>
+                  <TableHead className="w-[50px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium uppercase">
+                      {product.key}
+                    </TableCell>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(product.price)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <DrawerTrigger asChild>
+                        <Button variant="ghost">
+                          <Pencil size={20} />
+                        </Button>
+                      </DrawerTrigger>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <AlertDialog>
+                        <AlertDialogTrigger>
+                          <Trash size={20} />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              ¿Estás absolutamente seguro?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta acción no se puede deshacer. Esto eliminará
+                              permanentemente este producto y eliminará sus
+                              datos de nuestros servidores.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteProduct(product.id)}
+                            >
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {/* Products data ends */}
+
+            {/* Pagination starts */}
+            {metadata && (
+              <Pagination className="pt-5">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={handlePreviousClick}
+                    />
+                  </PaginationItem>
+
+                  {[...Array(metadata.page_count)].map((_, i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        href="#"
+                        isActive={metadata.page === i + 1}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageClick(i + 1);
+                        }}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext href="#" onClick={handleNextClick} />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+            {/* Pagination ends */}
+          </>
+        )}
       </Drawer>
       {/* Drawer ends  */}
-
-      {isLoading ? (
-        // Skeleton starts
-        [...Array(10)].map((_, i) => (
-          <div key={i} className="flex space-x-4 p-1.5">
-            <Skeleton className="h-6 w-1/6" />
-            <Skeleton className="h-6 w-4/6" />
-            <Skeleton className="h-6 w-1/6" />
-          </div>
-        ))
-      ) : (
-        // Skeleton ends
-        <>
-          {/* Products data starts */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">Clave</TableHead>
-                <TableHead>Nombre del producto</TableHead>
-                <TableHead className="text-right">Precio</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium uppercase">
-                    {product.key}
-                  </TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(product.price)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <AlertDialog>
-                      <AlertDialogTrigger>
-                        <Trash size={20} />
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            ¿Estás absolutamente seguro?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Esto eliminará
-                            permanentemente este producto y eliminará sus datos
-                            de nuestros servidores.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => deleteProduct(product.id)}>Eliminar</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {/* Products data ends */}
-
-          {/* Pagination starts */}
-          {metadata && (
-            <Pagination className="pt-5">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" onClick={handlePreviousClick} />
-                </PaginationItem>
-
-                {[...Array(metadata.page_count)].map((_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      href="#"
-                      isActive={metadata.page === i + 1}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handlePageClick(i + 1);
-                      }}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-
-                <PaginationItem>
-                  <PaginationNext href="#" onClick={handleNextClick} />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
-          {/* Pagination ends */}
-        </>
-      )}
       <Toaster />
     </MaxWidthWrapper>
   );
