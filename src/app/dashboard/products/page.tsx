@@ -1,4 +1,4 @@
-// TODO: Edit products
+// TODO: Edit products & complete product form
 // TODO: Search filter by key and name
 // TODO: Toaster componnet should be available across the app
 // TODO: Only authenticated users should be able to access this page
@@ -7,23 +7,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
@@ -58,18 +41,6 @@ import {
 } from "@/components/ui/select";
 
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -100,13 +71,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 
 import { Trash, Plus, Pencil } from "lucide-react";
+import ProductList from "./productList";
+import ProductPagination from "./productPagination";
 
-interface Product {
-  id: string;
-  name: string;
-  key: string;
-  price: number;
-}
+import { Product } from "@/types/product";
 
 const Products: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -115,6 +83,7 @@ const Products: React.FC = () => {
   const limit = 10;
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const allProducts = useCallback(async () => {
     setIsLoading(true);
@@ -181,12 +150,6 @@ const Products: React.FC = () => {
     },
     [limit]
   );
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-    }).format(value);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -258,6 +221,27 @@ const Products: React.FC = () => {
     [toast]
   );
 
+  const editProduct = (product: any) => {
+    console.log("Edit product", product);
+    setOpen(true);
+    setSelectedProduct(product);
+  };
+
+  const createProduct = () => {
+    setOpen(true);
+    let defaultValues = {
+      name: "",
+      key: "",
+      description: "",
+      iva: 0,
+      ieps: 0,
+      isr: 0,
+      sku: "",
+      price: 0,
+    };
+    setSelectedProduct(defaultValues);
+  };
+
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
       {/* Breadcrumb starts */}
@@ -276,11 +260,6 @@ const Products: React.FC = () => {
 
       {/* Drawer starts */}
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>
-          <Button className="fixed right-4 bottom-4 md:right-6 md:bottom-6 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center">
-            <Plus />
-          </Button>
-        </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>Nuevo producto</DrawerTitle>
@@ -461,124 +440,58 @@ const Products: React.FC = () => {
             </form>
           </Form>
         </DrawerContent>
-
-        {isLoading ? (
-          // Skeleton starts
-          [...Array(10)].map((_, i) => (
-            <div key={i} className="flex space-x-4 p-1.5">
-              <Skeleton className="h-6 w-1/6" />
-              <Skeleton className="h-6 w-4/6" />
-              <Skeleton className="h-6 w-1/6" />
-            </div>
-          ))
-        ) : (
-          // Skeleton ends
-          <>
-            {/* Search bar starts */}
-            <div className="flex w-full max-w-sm items-center space-x-2 mb-5">
-              <Input type="text" placeholder="Buscar producto" />
-              {/* <Button type="submit">Buscar</Button> */}
-            </div>
-            {/* Search bar ends */}
-
-            {/* Products data starts */}
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Clave</TableHead>
-                  <TableHead>Nombre del producto</TableHead>
-                  <TableHead className="text-right">Precio</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium uppercase">
-                      {product.key}
-                    </TableCell>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(product.price)}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <DrawerTrigger asChild>
-                        <Button variant="ghost">
-                          <Pencil size={20} />
-                        </Button>
-                      </DrawerTrigger>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <AlertDialog>
-                        <AlertDialogTrigger>
-                          <Trash size={20} />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              ¿Estás absolutamente seguro?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Esta acción no se puede deshacer. Esto eliminará
-                              permanentemente este producto y eliminará sus
-                              datos de nuestros servidores.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => deleteProduct(product.id)}
-                            >
-                              Eliminar
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {/* Products data ends */}
-
-            {/* Pagination starts */}
-            {metadata && (
-              <Pagination className="pt-5">
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={handlePreviousClick}
-                    />
-                  </PaginationItem>
-
-                  {[...Array(metadata.page_count)].map((_, i) => (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        href="#"
-                        isActive={metadata.page === i + 1}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePageClick(i + 1);
-                        }}
-                      >
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-
-                  <PaginationItem>
-                    <PaginationNext href="#" onClick={handleNextClick} />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
-            {/* Pagination ends */}
-          </>
-        )}
       </Drawer>
       {/* Drawer ends  */}
+
+      {isLoading ? (
+        // Skeleton starts
+        [...Array(10)].map((_, i) => (
+          <div key={i} className="flex space-x-4 p-1.5">
+            <Skeleton className="h-6 w-1/6" />
+            <Skeleton className="h-6 w-4/6" />
+            <Skeleton className="h-6 w-1/6" />
+          </div>
+        ))
+      ) : (
+        // Skeleton ends
+        <>
+          {/* Search bar starts */}
+          <div className="flex w-full max-w-sm items-center space-x-2 mb-5">
+            <Input type="text" placeholder="Buscar producto" />
+            {/* <Button type="submit">Buscar</Button> */}
+          </div>
+          {/* Search bar ends */}
+
+          {/* Add product button starts */}
+          <Button
+            onClick={() => createProduct()}
+            className="fixed right-4 bottom-4 md:right-6 md:bottom-6 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center"
+          >
+            <Plus />
+          </Button>
+          {/* Add product button ends */}
+
+          {/* Products List */}
+          <ProductList
+            products={products}
+            onEdit={editProduct}
+            onDelete={deleteProduct}
+          />
+          {/* End Products List */}
+
+          {/* Pagination starts */}
+          {metadata && (
+            <ProductPagination
+              page_count={metadata.page_count}
+              page={metadata.page}
+              onPreviousClick={handlePreviousClick}
+              onPageClick={handlePageClick}
+              onNextClick={handleNextClick}
+            />
+          )}
+          {/* Pagination ends */}
+        </>
+      )}
       <Toaster />
     </MaxWidthWrapper>
   );
