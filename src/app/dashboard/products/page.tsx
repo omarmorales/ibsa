@@ -1,4 +1,4 @@
-// TODO: Edit products & complete product form
+// TODO: Edit products
 // TODO: Search filter by key and name
 // TODO: Toaster componnet should be available across the app
 // TODO: Only authenticated users should be able to access this page
@@ -11,35 +11,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 
 import { Button } from "@/components/ui/button";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -48,33 +27,18 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { formSchema } from "../formSchema";
-
-import { selectOptions } from "../selectOptions";
-
 import { useToast } from "@/components/ui/use-toast";
-
 import { Toaster } from "@/components/ui/toaster";
-
-import { Trash, Plus, Pencil } from "lucide-react";
+import { Plus } from "lucide-react";
 import ProductList from "./productList";
 import ProductPagination from "./productPagination";
-
 import { Product } from "@/types/product";
+import { ProductForm } from "./productForm";
 
 const Products: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -175,7 +139,7 @@ const Products: React.FC = () => {
           form.reset(); // reset the form
           setOpen(false); // close the drawer
           toast({
-            title: "Product created!",
+            title: "¡Producto creado!",
             description: "El producto ha sido creado exitosamente.",
           });
         } else if (res.data.error) {
@@ -222,9 +186,9 @@ const Products: React.FC = () => {
   );
 
   const editProduct = (product: any) => {
-    console.log("Edit product", product);
     setOpen(true);
     setSelectedProduct(product);
+    console.log("Edit product", selectedProduct);
   };
 
   const createProduct = () => {
@@ -240,6 +204,7 @@ const Products: React.FC = () => {
       price: 0,
     };
     setSelectedProduct(defaultValues);
+    console.log("Create product", selectedProduct);
   };
 
   return (
@@ -262,183 +227,15 @@ const Products: React.FC = () => {
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle>Nuevo producto</DrawerTitle>
+            <DrawerTitle>
+              {selectedProduct && selectedProduct.id ? "Editar producto" : "Nuevo producto"}
+            </DrawerTitle>
             <DrawerDescription>
               Agrega la siguiente informacion de tu producto
             </DrawerDescription>
           </DrawerHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="lg:grid lg:grid-cols-12 lg:gap-x-5 xl:gap-x-8 p-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="col-span-4">
-                      <FormLabel>Nombre del producto</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <FormField
-                  control={form.control}
-                  name="key"
-                  render={({ field }) => (
-                    <FormItem className="col-span-3">
-                      <FormLabel>Clave del producto</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="col-span-6">
-                      <FormLabel>Descripción del producto</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="iva"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>IVA</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(Number(value))}
-                        defaultValue={String(field.value)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {selectOptions.iva.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="ieps"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>IEPS</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(Number(value))}
-                        defaultValue={String(field.value)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {selectOptions.ieps.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="isr"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>ISR</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(Number(value))}
-                        defaultValue={String(field.value)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {selectOptions.isr.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="sku"
-                  render={({ field }) => (
-                    <FormItem className="col-span-3">
-                      <FormLabel>SKU</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem className="col-span-3">
-                      <FormLabel>Precio de compra</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <DrawerFooter>
-                <Button type="submit">Crear</Button>
-                <DrawerClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DrawerClose>
-              </DrawerFooter>
-            </form>
-          </Form>
+          <ProductForm initialValues={selectedProduct} onSubmit={onSubmit} />
         </DrawerContent>
       </Drawer>
       {/* Drawer ends  */}
