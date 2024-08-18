@@ -93,4 +93,6 @@ const ProductList: React.FC<ProductListProps> = memo(({ products, onEdit, onDele
   )
 });
 
+ProductList.displayName = "ProductList";
+
 export default ProductList;
