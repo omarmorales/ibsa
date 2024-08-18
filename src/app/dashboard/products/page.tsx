@@ -130,82 +130,84 @@ const Products: React.FC = () => {
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
-      const isEdit = Boolean(values?.id);
-      const apiUrl = isEdit ? `/api/products/${values.id}` : "/api/products";
-      const apiMethod = isEdit ? axios.put : axios.post;
-      const successMessage = isEdit
-        ? "¡Producto actualizado!"
-        : "¡Producto creado!";
-      const errorMessage = isEdit
-        ? "Hubo un problema al actualizar el producto."
-        : "Hubo un problema al crear el producto.";
+      console.log("onSubmit", values);
+      // const isEdit = Boolean(values?.id);
+      // const apiUrl = isEdit ? `/api/products/${values.id}` : "/api/products";
+      // const apiMethod = isEdit ? axios.put : axios.post;
+      // const successMessage = isEdit
+      //   ? "¡Producto actualizado!"
+      //   : "¡Producto creado!";
+      // const errorMessage = isEdit
+      //   ? "Hubo un problema al actualizar el producto."
+      //   : "Hubo un problema al crear el producto.";
 
-        const valuesToSend = { ...values };
-        if (valuesToSend.id) {
-          delete valuesToSend.id;
-        }
+      //   const valuesToSend = { ...values };
+      //   if (valuesToSend.id) {
+      //     delete valuesToSend.id;
+      //   }
 
-      try {
-        const res = await apiMethod(apiUrl, valuesToSend);
+      // try {
+      //   const res = await apiMethod(apiUrl, valuesToSend);
 
-        if (res.status === 200 && !res.data.status) {
-          setProducts((prevProducts) =>
-            isEdit
-              ? prevProducts.map((product) =>
-                  product.id === values.id ? res.data : product
-                )
-              : [...prevProducts, res.data]
-          );
-          form.reset(); // reset the form
-          setOpen(false); // close the drawer
-          toast({
-            title: successMessage,
-            description: `El producto ha sido ${
-              isEdit ? "actualizado" : "creado"
-            } exitosamente.`,
-          });
-        } else if (res.data.error) {
-          toast({
-            variant: "destructive",
-            title: "¡Oh! Algo salió mal.",
-            description: errorMessage,
-          });
-        }
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "¡Oh! Algo salió mal.",
-        });
-        console.error(
-          `Failed to ${isEdit ? "update" : "create"} product`,
-          error
-        );
-      }
+      //   if (res.status === 200 && !res.data.status) {
+      //     setProducts((prevProducts) =>
+      //       isEdit
+      //         ? prevProducts.map((product) =>
+      //             product.id === values.id ? res.data : product
+      //           )
+      //         : [...prevProducts, res.data]
+      //     );
+      //     form.reset(); // reset the form
+      //     setOpen(false); // close the drawer
+      //     toast({
+      //       title: successMessage,
+      //       description: `El producto ha sido ${
+      //         isEdit ? "actualizado" : "creado"
+      //       } exitosamente.`,
+      //     });
+      //   } else if (res.data.error) {
+      //     toast({
+      //       variant: "destructive",
+      //       title: "¡Oh! Algo salió mal.",
+      //       description: errorMessage,
+      //     });
+      //   }
+      // } catch (error) {
+      //   toast({
+      //     variant: "destructive",
+      //     title: "¡Oh! Algo salió mal.",
+      //   });
+      //   console.error(
+      //     `Failed to ${isEdit ? "update" : "create"} product`,
+      //     error
+      //   );
+      // }
     },
     [toast, form]
   );
 
   const deleteProduct = useCallback(
     async (id: string) => {
-      try {
-        const res = await axios.delete(`/api/products/${id}`);
-        if (res.status === 200) {
-          toast({
-            title: "Producto eliminado",
-            description: "El producto ha sido eliminado exitosamente",
-          });
-          setProducts((prevProducts) =>
-            prevProducts.filter((product) => product.id !== id)
-          );
-        }
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "¡Oh! Algo salió mal.",
-          description: "Hubo un problema al eliminar el producto.",
-        });
-        console.error("Failed to delete product", error);
-      }
+      console.log("deleteProduct", id);
+      // try {
+      //   const res = await axios.delete(`/api/products/${id}`);
+      //   if (res.status === 200) {
+      //     toast({
+      //       title: "Producto eliminado",
+      //       description: "El producto ha sido eliminado exitosamente",
+      //     });
+      //     setProducts((prevProducts) =>
+      //       prevProducts.filter((product) => product.id !== id)
+      //     );
+      //   }
+      // } catch (error) {
+      //   toast({
+      //     variant: "destructive",
+      //     title: "¡Oh! Algo salió mal.",
+      //     description: "Hubo un problema al eliminar el producto.",
+      //   });
+      //   console.error("Failed to delete product", error);
+      // }
     },
     [toast]
   );
