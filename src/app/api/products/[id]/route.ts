@@ -11,21 +11,23 @@ export async function PUT(
     const { id } = params;
     const body = await req.json();
 
-    console.log("PUT product", body);
-
     // Validate the request body
     await productSchema.validate(body);
 
     const product = await prisma.product.update({
       where: { id },
-      data: body
+      data: body,
     });
+
     console.log("PUT product", product);
     return NextResponse.json(product);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error updating product", error);
-    return NextResponse.json({ error: "error updating product", status: 500 });
+    
+    return NextResponse.json(
+      { error: "Error updating product" },
+      { status: 500 }
+    );
   }
 }
 
@@ -38,10 +40,11 @@ export async function DELETE(
     const product = await prisma.product.delete({
       where: { id },
     });
-    console.log("DELETE product", product);
     return NextResponse.json(product);
   } catch (error) {
-    console.error("Error deleting product", error);
-    return NextResponse.json({ error: "error deleting product", status: 500 });
+    return NextResponse.json(
+      { error: "Error deleting product" },
+      { status: 500 }
+    );
   }
 }
