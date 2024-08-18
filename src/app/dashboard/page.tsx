@@ -5,14 +5,8 @@ import { Package } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/connect";
 
-export async function getServerSideData() {
-  const totalProducts = await prisma.product.count();
-  return { totalProducts };
-}
-
 const Page = async () => {
-  const { totalProducts } = await getServerSideData();
-
+  const totalProducts = await prisma.product.count();
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
       <h1 className="text-2xl mb-2">Dashboard</h1>
