@@ -11,6 +11,8 @@ export async function PUT(
     const { id } = params;
     const body = await req.json();
 
+    console.log("PUT product", body);
+
     // Validate the request body
     await productSchema.validate(body);
 

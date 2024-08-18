@@ -1,6 +1,7 @@
 import * as yup from "yup";
 
 export const productSchema = yup.object().shape({
+    id: yup.string().notRequired(),
     name: yup.string().required(),
     key: yup.string().required().matches(/^\S*$/, 'Key should not contain spaces'),
     description: yup.string(),

@@ -42,7 +42,7 @@ export function ProductForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="lg:grid lg:grid-cols-12 lg:gap-x-5 xl:gap-x-8 p-4">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-x-5 xl:gap-x-8 gap-y-3 p-4">
           <FormField
             control={form.control}
             name="name"
@@ -203,9 +203,9 @@ export function ProductForm({
         </div>
 
         <DrawerFooter>
-          <Button type="submit">Crear</Button>
+          <Button type="submit">Guardar</Button>
           <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline">Cancelar</Button>
           </DrawerClose>
         </DrawerFooter>
       </form>

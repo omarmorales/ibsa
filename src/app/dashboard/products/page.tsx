@@ -1,4 +1,3 @@
-// TODO: Edit products
 // TODO: Search filter by key and name
 // TODO: Toaster componnet should be available across the app
 // TODO: Only authenticated users should be able to access this page
@@ -131,22 +130,45 @@ const Products: React.FC = () => {
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
-      try {
-        const res = await axios.post("/api/products", values);
+      const isEdit = Boolean(values?.id);
+      const apiUrl = isEdit ? `/api/products/${values.id}` : "/api/products";
+      const apiMethod = isEdit ? axios.put : axios.post;
+      const successMessage = isEdit
+        ? "¡Producto actualizado!"
+        : "¡Producto creado!";
+      const errorMessage = isEdit
+        ? "Hubo un problema al actualizar el producto."
+        : "Hubo un problema al crear el producto.";
 
-        if (res.status === 200) {
-          setProducts((prevProducts) => [...prevProducts, res.data]);
+        const valuesToSend = { ...values };
+        if (valuesToSend.id) {
+          delete valuesToSend.id;
+        }
+
+      try {
+        const res = await apiMethod(apiUrl, valuesToSend);
+
+        if (res.status === 200 && !res.data.status) {
+          setProducts((prevProducts) =>
+            isEdit
+              ? prevProducts.map((product) =>
+                  product.id === values.id ? res.data : product
+                )
+              : [...prevProducts, res.data]
+          );
           form.reset(); // reset the form
           setOpen(false); // close the drawer
           toast({
-            title: "¡Producto creado!",
-            description: "El producto ha sido creado exitosamente.",
+            title: successMessage,
+            description: `El producto ha sido ${
+              isEdit ? "actualizado" : "creado"
+            } exitosamente.`,
           });
         } else if (res.data.error) {
           toast({
             variant: "destructive",
             title: "¡Oh! Algo salió mal.",
-            description: "Hubo un problema al crear el producto.",
+            description: errorMessage,
           });
         }
       } catch (error) {
@@ -154,7 +176,10 @@ const Products: React.FC = () => {
           variant: "destructive",
           title: "¡Oh! Algo salió mal.",
         });
-        console.error("Failed to create product", error);
+        console.error(
+          `Failed to ${isEdit ? "update" : "create"} product`,
+          error
+        );
       }
     },
     [toast, form]
@@ -188,7 +213,6 @@ const Products: React.FC = () => {
   const editProduct = (product: any) => {
     setOpen(true);
     setSelectedProduct(product);
-    console.log("Edit product", selectedProduct);
   };
 
   const createProduct = () => {
@@ -204,7 +228,6 @@ const Products: React.FC = () => {
       price: 0,
     };
     setSelectedProduct(defaultValues);
-    console.log("Create product", selectedProduct);
   };
 
   return (
@@ -228,7 +251,9 @@ const Products: React.FC = () => {
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>
-              {selectedProduct && selectedProduct.id ? "Editar producto" : "Nuevo producto"}
+              {selectedProduct && selectedProduct.id
+                ? "Editar producto"
+                : "Nuevo producto"}
             </DrawerTitle>
             <DrawerDescription>
               Agrega la siguiente informacion de tu producto
