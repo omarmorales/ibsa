@@ -1,7 +1,7 @@
 // TODO: Create a responsive sidenav here in the dashboard so the user can move between pages
 // TODO: User and Admin functionalities
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Package } from "lucide-react";
+import { Package, Truck, Contact, ShoppingCart, Store, HardHat } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/connect";
 
@@ -12,6 +12,36 @@ const Page = async () => {
       <h1 className="text-2xl mb-2">Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Link
+          href="/dashboard/sales"
+          className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Start selling"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-x-5">
+              <Store className="h-10 w-10 shrink-0" />
+              <div>
+                <h3 className="text-gray-500">Ventas</h3>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/purchases"
+          className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="View purchases"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-x-5">
+              <ShoppingCart className="h-10 w-10 shrink-0" />
+              <div>
+                <h3 className="text-gray-500">Compras</h3>
+              </div>
+            </div>
+          </div>
+        </Link>
+
         <Link
           href="/dashboard/products"
           className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -23,6 +53,54 @@ const Page = async () => {
               <div>
                 <h3 className="text-gray-500">Productos</h3>
                 <div className="text-2xl font-bold">{totalProducts}</div>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link 
+          href="/dashboard/suppliers"
+          className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="View all suppliers"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-x-5">
+              <Truck className="h-10 w-10 shrink-0" />
+              <div>
+                <h3 className="text-gray-500">Proveedores</h3>
+                <div className="text-2xl font-bold">12</div>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link 
+          href="/dashboard/clients"
+          className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="View all clients"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-x-5">
+              <Contact className="h-10 w-10 shrink-0" />
+              <div>
+                <h3 className="text-gray-500">Clientes</h3>
+                <div className="text-2xl font-bold">12</div>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link 
+          href="/dashboard/staff"
+          className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="View all staff"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-x-5">
+              <HardHat className="h-10 w-10 shrink-0" />
+              <div>
+                <h3 className="text-gray-500">Personal</h3>
+                <div className="text-2xl font-bold">12</div>
               </div>
             </div>
           </div>

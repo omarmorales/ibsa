@@ -7,7 +7,7 @@ export const formSchema = z.object({
   name: z.string().min(2, {
     message: "El nombre debe contener al menos dos caracteres.",
   }),
-  key: z.string().min(2, {
+  key: z.string().toUpperCase().min(2, {
     message: "La clave debe contener al menos dos caracteres.",
   }),
   description: z.string(),
@@ -26,4 +26,27 @@ export const formSchema = z.object({
   }),
   price: z.number(),
   //p1: z.number().optional(),
+});
+
+export const supplierFormSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(2, {
+    message: "El nombre debe contener al menos dos caracteres.",
+  }),
+  rfc: z.string().min(2, {
+    message: "El RFC debe contener al menos dos caracteres.",
+  }),
+  key: z.string().toUpperCase().min(2, {
+    message: "La clave debe contener al menos dos caracteres.",
+  }),
+  phone: z.string().min(2, {
+    message: "El teléfono debe contener al menos dos caracteres.",
+  }),
+  email: z.string().email({
+    message: "El correo electrónico no es válido.",
+  }),
+  address: z.string().min(2, {
+    message: "La dirección debe contener al menos dos caracteres.",
+  }),
+  description: z.string(),
 });

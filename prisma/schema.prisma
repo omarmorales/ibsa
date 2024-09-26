@@ -59,3 +59,16 @@ model Line {
   updatedAt   DateTime  @updatedAt
   products    Product[]
 }
+
+model Supplier {
+  id          String    @id @default(cuid()) @map("_id")
+  name        String
+  rfc         String
+  key         String   @unique
+  phone       String
+  email       String
+  address     String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
