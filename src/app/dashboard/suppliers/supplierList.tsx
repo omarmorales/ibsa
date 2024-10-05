@@ -54,10 +54,13 @@ const SupplierList: React.FC<SupplierListProps> = memo(
               </TableCell>
               <TableCell className="text-center">
                 <AlertDialog>
-                  <AlertDialogTrigger>
-                    <Button variant="ghost">
-                      <Trash size={20} />
-                    </Button>
+                  <AlertDialogTrigger asChild>
+                    {/* Using a span or div to avoid nesting buttons */}
+                    <span className="flex items-center justify-center cursor-pointer">
+                      <Button variant="ghost">
+                        <Trash size={20} />
+                      </Button>
+                    </span>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
