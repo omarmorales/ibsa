@@ -53,6 +53,22 @@ const Search: React.FC<SearchProps> = ({ onSearch, options }) => {
     };
   }, [highlightedIndex, options]);
 
+  // Global listener for "/" key to focus the input
+  useEffect(() => {
+    const handleSlashKey = (event: KeyboardEvent) => {
+      if (event.key === "/") {
+        event.preventDefault();
+        inputRef.current?.focus(); // Focus the input when "/" is pressed
+      }
+    };
+
+    document.addEventListener("keydown", handleSlashKey);
+
+    return () => {
+      document.removeEventListener("keydown", handleSlashKey);
+    };
+  }, []);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
     setHighlightedIndex(null); // Reset highlighted index when typing
@@ -65,7 +81,7 @@ const Search: React.FC<SearchProps> = ({ onSearch, options }) => {
           ref={inputRef}
           type="text"
           onChange={handleInputChange}
-          placeholder="Buscar producto"
+          placeholder='Escribe "/" para buscar'
           className="p-2 pl-4 outline-none flex-grow rounded-l-full"
           value={inputValue}
           tabIndex={0} // Ensure input is focusable

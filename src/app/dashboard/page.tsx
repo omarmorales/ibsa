@@ -1,7 +1,15 @@
 // TODO: Create a responsive sidenav here in the dashboard so the user can move between pages
 // TODO: User and Admin functionalities
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Package, Truck, Contact, ShoppingCart, Store, HardHat } from "lucide-react";
+import {
+  Package,
+  Truck,
+  Contact,
+  ShoppingCart,
+  Store,
+  HardHat,
+  LayoutDashboard,
+} from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/connect";
 
@@ -10,10 +18,12 @@ const Page = async () => {
   const totalSuppliers = await prisma.supplier.count();
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
-      <h1 className="text-2xl mb-2">Dashboard</h1>
+      <h1 className="flex items-center text-2xl mb-2">
+        <LayoutDashboard className="h-10 w-10 shrink-0 pr-2" /> Dashboard
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Link
+        <Link
           href="/dashboard/sales"
           className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Start selling"
@@ -59,7 +69,7 @@ const Page = async () => {
           </div>
         </Link>
 
-        <Link 
+        <Link
           href="/dashboard/suppliers"
           className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="View all suppliers"
@@ -69,13 +79,13 @@ const Page = async () => {
               <Truck className="h-10 w-10 shrink-0" />
               <div>
                 <h3 className="text-gray-500">Proveedores</h3>
-                <div className="text-2xl font-bold">{ totalSuppliers }</div>
+                <div className="text-2xl font-bold">{totalSuppliers}</div>
               </div>
             </div>
           </div>
         </Link>
 
-        <Link 
+        <Link
           href="/dashboard/clients"
           className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="View all clients"
@@ -91,7 +101,7 @@ const Page = async () => {
           </div>
         </Link>
 
-        <Link 
+        <Link
           href="/dashboard/staff"
           className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="View all staff"

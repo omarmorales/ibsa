@@ -220,7 +220,24 @@ const Suppliers: React.FC = () => {
 
   const deleteSupplier = useCallback(
     async (id: string) => {
-      console.log("delete supplier", id);
+      try {
+        const res = await axios.delete(`/api/suppliers/${id}`);
+        if (res.status === 200) {
+          toast({
+            title: "¡Proveedor eliminado!",
+            description: "El proveedor ha sido eliminado exitosamente.",
+          });
+          setSuppliers((prevSuppliers) =>
+            prevSuppliers.filter((supplier) => supplier.id !== id)
+          );
+        }
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "¡Oh! Algo salió mal.",
+          description: "Hubo un problema al eliminar el proveedor.",
+        });
+      }
     },
     [toast]
   );
