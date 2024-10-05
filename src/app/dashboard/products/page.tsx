@@ -1,4 +1,3 @@
-// TODO: Search filter by key and name
 // TODO: Toaster componnet should be available across the app
 // TODO: Only authenticated users should be able to access this page
 "use client";

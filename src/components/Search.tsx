@@ -8,12 +8,13 @@ interface SearchProps {
 
 const Search: React.FC<SearchProps> = ({ onSearch, options }) => {
   const [inputValue, setInputValue] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       onSearch(inputValue);
-    }, 500); // 500ms delay
+    }, 500); // 500ms delay for debounce
 
     return () => {
       clearTimeout(timer);
@@ -22,20 +23,39 @@ const Search: React.FC<SearchProps> = ({ onSearch, options }) => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === "b") {
-        inputRef.current?.focus();
+      if (options.length === 0 || !inputRef.current?.contains(document.activeElement)) return;
+
+      if (event.key === "ArrowDown") {
+        setHighlightedIndex((prev) =>
+          prev === null || prev === options.length - 1 ? 0 : prev + 1
+        );
+      }
+      if (event.key === "ArrowUp") {
+        setHighlightedIndex((prev) =>
+          prev === null || prev === 0 ? options.length - 1 : prev - 1
+        );
+      }
+      if (event.key === "Enter" && highlightedIndex !== null) {
+        setInputValue(options[highlightedIndex].name);
+        setHighlightedIndex(null); // Close dropdown after selection
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    const input = inputRef.current;
+    if (input) {
+      input.addEventListener("keydown", handleKeyDown);
+    }
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      if (input) {
+        input.removeEventListener("keydown", handleKeyDown);
+      }
     };
-  }, []);
+  }, [highlightedIndex, options]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
+    setHighlightedIndex(null); // Reset highlighted index when typing
   };
 
   return (
@@ -47,6 +67,8 @@ const Search: React.FC<SearchProps> = ({ onSearch, options }) => {
           onChange={handleInputChange}
           placeholder="Buscar producto"
           className="p-2 pl-4 outline-none flex-grow rounded-l-full"
+          value={inputValue}
+          tabIndex={0} // Ensure input is focusable
         />
         <div className="p-2 rounded-r-full">
           <SearchIcon size={24} />
@@ -59,10 +81,12 @@ const Search: React.FC<SearchProps> = ({ onSearch, options }) => {
             {options.map((option, index) => (
               <li
                 key={index}
-                className="p-3 hover:bg-gray-100 cursor-pointer"
-                onClick={() => setInputValue(option.name)} // Customize this based on your option structure
+                className={`p-3 hover:bg-gray-100 cursor-pointer ${
+                  highlightedIndex === index ? "bg-gray-200" : ""
+                }`}
+                onClick={() => setInputValue(option.name)}
               >
-                {option.name} {/* Adjust this to match your option data */}
+                {option.name}
               </li>
             ))}
           </ul>
