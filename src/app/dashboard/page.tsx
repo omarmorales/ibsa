@@ -7,6 +7,7 @@ import prisma from "@/lib/connect";
 
 const Page = async () => {
   const totalProducts = await prisma.product.count();
+  const totalSuppliers = await prisma.supplier.count();
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
       <h1 className="text-2xl mb-2">Dashboard</h1>
@@ -68,7 +69,7 @@ const Page = async () => {
               <Truck className="h-10 w-10 shrink-0" />
               <div>
                 <h3 className="text-gray-500">Proveedores</h3>
-                <div className="text-2xl font-bold">12</div>
+                <div className="text-2xl font-bold">{ totalSuppliers }</div>
               </div>
             </div>
           </div>

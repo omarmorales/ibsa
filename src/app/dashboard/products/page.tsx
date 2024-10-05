@@ -38,6 +38,7 @@ import ProductList from "./productList";
 import ProductPagination from "./productPagination";
 import { Product } from "@/types/product";
 import { ProductForm } from "./productForm";
+import Search from "@/components/Search";
 
 const Products: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +48,7 @@ const Products: React.FC = () => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [searchResults, setSearchResults] = useState([]);
 
   const allProducts = useCallback(async () => {
     setIsLoading(true);
@@ -127,6 +129,28 @@ const Products: React.FC = () => {
       price: 0,
     },
   });
+
+  const handleSearch = useCallback((query: string) => {
+    if (!query || query.trim() === "") {
+      console.log("Query is empty, not making the request");
+      setSearchResults([]);
+      return;
+    }
+
+    console.log(`Searching for ${query}`);
+    axios
+      .get(`/api/products/search?q=${query}`)
+      .then((response) => {
+        console.log(response.data);
+        setSearchResults(response.data);
+      })
+      .catch((error) => {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+      });
+  }, []);
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
@@ -280,10 +304,7 @@ const Products: React.FC = () => {
         // Skeleton ends
         <>
           {/* Search bar starts */}
-          <div className="flex w-full max-w-sm items-center space-x-2 mb-5">
-            <Input type="text" placeholder="Buscar producto" />
-            {/* <Button type="submit">Buscar</Button> */}
-          </div>
+          <Search onSearch={handleSearch} options={searchResults} />
           {/* Search bar ends */}
 
           {/* Add product button starts */}

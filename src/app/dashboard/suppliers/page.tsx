@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SupplierForm } from "./supplierForm";
 import { supplierFormSchema } from "../formSchema";
 import { useToast } from "@/components/ui/use-toast";
@@ -28,13 +29,38 @@ import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Supplier } from "@/types/supplier";
+import { Toaster } from "@/components/ui/toaster";
+import SupplierList from "./supplierList";
+import SupplierPagination from "./supplierPagination";
 
 const Suppliers: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [metadata, setMetadata] = useState<any>(null);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
+  const limit = 10;
+
+  const allSuppliers = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await axios.get(
+        `/api/suppliers?limit=${limit}&page=1&include=metadata`
+      );
+      setSuppliers(res.data.suppliers);
+      setMetadata(res.data.metadata);
+    } catch (error) {
+      console.error("Failed to fetch suppliers", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [limit]);
+
+  useEffect(() => {
+    allSuppliers();
+  }, [allSuppliers]);
 
   const { toast } = useToast();
 
@@ -69,6 +95,53 @@ const Suppliers: React.FC = () => {
     };
     setSelectedSupplier(defaultValues);
   };
+
+  const handlePreviousClick = useCallback(async () => {
+    if (metadata.page > 1) {
+      try {
+        const res = await axios.get(
+          `/api/suppliers?limit=${limit}&page=${
+            metadata.page - 1
+          }&include=metadata`
+        );
+        setSuppliers(res.data.suppliers);
+        setMetadata(res.data.metadata);
+      } catch (error) {
+        console.error("Failed to fetch previous page", error);
+      }
+    }
+  }, [metadata, limit]);
+
+  const handleNextClick = useCallback(async () => {
+    if (metadata.page < metadata.page_count) {
+      try {
+        const res = await axios.get(
+          `/api/suppliers?limit=${limit}&page=${
+            metadata.page + 1
+          }&include=metadata`
+        );
+        setSuppliers(res.data.suppliers);
+        setMetadata(res.data.metadata);
+      } catch (error) {
+        console.error("Failed to fetch next page", error);
+      }
+    }
+  }, [metadata, limit]);
+
+  const handlePageClick = useCallback(
+    async (page: number) => {
+      try {
+        const res = await axios.get(
+          `/api/suppliers?limit=${limit}&page=${page}&include=metadata`
+        );
+        setSuppliers(res.data.suppliers);
+        setMetadata(res.data.metadata);
+      } catch (error) {
+        console.error(`Failed to fetch page ${page}`, error);
+      }
+    },
+    [limit]
+  );
 
   const form = useForm<z.infer<typeof supplierFormSchema>>({
     resolver: zodResolver(supplierFormSchema),
@@ -132,12 +205,24 @@ const Suppliers: React.FC = () => {
           title: "¡Oh! Algo salió mal.",
         });
         console.error(
-          `Failed to ${isEdit ? "update" : "create"} product`,
+          `Failed to ${isEdit ? "update" : "create"} supplier`,
           error
         );
       }
     },
     [toast, form]
+  );
+
+  const editSupplier = (supplier: any) => {
+    setOpen(true);
+    setSelectedSupplier(supplier);
+  };
+
+  const deleteSupplier = useCallback(
+    async (id: string) => {
+      console.log("delete supplier", id);
+    },
+    [toast]
   );
 
   return (
@@ -157,14 +242,14 @@ const Suppliers: React.FC = () => {
         </Breadcrumb>
         {/* Breadcrumb ends */}
 
-        {/* Add product button starts */}
+        {/* Add supplier button starts */}
         <Button
           onClick={() => createSupplier()}
           className="fixed right-4 bottom-4 md:right-6 md:bottom-6 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center"
         >
           <Plus />
         </Button>
-        {/* Add product button ends */}
+        {/* Add supplier button ends */}
 
         {/* Dialog starts */}
         <Dialog open={open} onOpenChange={setOpen}>
@@ -172,8 +257,8 @@ const Suppliers: React.FC = () => {
             <DialogHeader>
               <DialogTitle>
                 {selectedSupplier && selectedSupplier.id
-                  ? "Editar producto"
-                  : "Nuevo producto"}
+                  ? "Editar proveedor"
+                  : "Nuevo proveedor"}
               </DialogTitle>
               <DialogDescription>
                 Agrega la información de tu nuevo proveedor.
@@ -187,6 +272,40 @@ const Suppliers: React.FC = () => {
           </DialogContent>
         </Dialog>
         {/* Dialog ends */}
+
+        {isLoading ? (
+          // Skeleton starts
+          [...Array(10)].map((_, i) => (
+            <div key={i} className="flex space-x-4 p-1.5">
+              <Skeleton className="h-6 w-1/6" />
+              <Skeleton className="h-6 w-4/6" />
+              <Skeleton className="h-6 w-1/6" />
+            </div>
+          ))
+        ) : (
+          <>
+            {/* Supplier list starts */}
+            <SupplierList
+              suppliers={suppliers}
+              onEdit={editSupplier}
+              onDelete={deleteSupplier}
+            />
+            {/* Supplier list ends */}
+
+            {/* Pagination starts */}
+            {metadata && (
+              <SupplierPagination
+                page_count={metadata.page_count}
+                page={metadata.page}
+                onPreviousClick={handlePreviousClick}
+                onPageClick={handlePageClick}
+                onNextClick={handleNextClick}
+              />
+            )}
+            {/* Pagination ends */}
+          </>
+        )}
+        <Toaster />
       </MaxWidthWrapper>
     </div>
   );
