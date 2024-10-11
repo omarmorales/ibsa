@@ -18,7 +18,7 @@ const Page = async () => {
   const totalSuppliers = await prisma.supplier.count();
   return (
     <MaxWidthWrapper className="pb-24 pt-10 sm:pb-32 lg:pt-10 xl:pt-10 lg:pb-52">
-      <h1 className="flex items-center text-2xl mb-2">
+      <h1 className="flex items-center text-2xl mb-5">
         <LayoutDashboard className="h-10 w-10 shrink-0 pr-2" /> Dashboard
       </h1>
 
@@ -86,9 +86,9 @@ const Page = async () => {
         </Link>
 
         <Link
-          href="/dashboard/clients"
+          href="/dashboard/customers"
           className="bg-white p-4 rounded-lg shadow-md block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="View all clients"
+          aria-label="View all customers"
         >
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-x-5">
