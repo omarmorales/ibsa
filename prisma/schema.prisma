@@ -16,7 +16,7 @@ datasource db {
 // TODO: Verify model fields
 // TODO: Verify model relations
 model Product {
-  id          String   @id @default(cuid()) @map("_id")
+  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
   name        String
   key         String   @unique
   description String?
@@ -34,16 +34,20 @@ model Product {
   c2          Float?
   c3          Float?
   c4          Float?
+  quantity    Float?   @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  lineId      String?
-  line        Line?    @relation(fields: [lineId], references: [id])
-  unitId      String?
-  unit        Unit?    @relation(fields: [unitId], references: [id])
+
+  // Relations
+  purchases PurchaseProduct[]
+  lineId    String?           @db.ObjectId
+  line      Line?             @relation(fields: [lineId], references: [id])
+  unitId    String?           @db.ObjectId
+  unit      Unit?             @relation(fields: [unitId], references: [id])
 }
 
 model Unit {
-  id          String    @id @default(cuid()) @map("_id")
+  id          String    @id @default(cuid()) @map("_id") @db.ObjectId
   name        String
   description String
   createdAt   DateTime  @default(now())
@@ -52,7 +56,7 @@ model Unit {
 }
 
 model Line {
-  id          String    @id @default(cuid()) @map("_id")
+  id          String    @id @default(cuid()) @map("_id") @db.ObjectId
   name        String
   description String
   createdAt   DateTime  @default(now())
@@ -61,14 +65,48 @@ model Line {
 }
 
 model Supplier {
-  id          String    @id @default(cuid()) @map("_id")
+  id          String     @id @default(cuid()) @map("_id")
   name        String
   rfc         String
-  key         String   @unique
+  key         String     @unique
   phone       String
   email       String
   address     String
   description String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  purchases   Purchase[]
 }
+
+model Purchase {
+  id              String   @id @default(cuid()) @map("_id") @db.ObjectId
+  referenceNumber String?
+  purchaseDate    DateTime
+  supplierId      String
+  total           Float
+  status          String // Optional: Pending, Paid, Partial
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  supplier Supplier          @relation(fields: [supplierId], references: [id])
+  products PurchaseProduct[]
+}
+
+model PurchaseProduct {
+  id         String  @id @default(cuid()) @map("_id") @db.ObjectId
+  purchaseId String  @db.ObjectId
+  productId  String  @db.ObjectId
+  quantity   Float
+  cost       Float
+  notes      String?
+
+  // Relations
+  purchase Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([purchaseId, productId])
+}
+
+// npx prisma db push
