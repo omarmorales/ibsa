@@ -52,7 +52,7 @@ export default async function Staff() {
         <TableBody>
           {staffMembers.map((staffMember) => (
             <TableRow key={staffMember.id} >
-              <TableCell>1</TableCell>
+              <TableCell>{ staffMember.id }</TableCell>
               <TableCell>{ staffMember.name }</TableCell>
               <TableCell>{ staffMember.role }</TableCell>
               <TableCell>Acciones</TableCell>
