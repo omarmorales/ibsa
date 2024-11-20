@@ -1,15 +1,20 @@
 import prisma from "@/lib/db";
 import { User } from "lucide-react";
+import { unstable_cache as cache } from "next/cache";
 
-export default async function StaffMember({ params }) {
-  const user = await prisma.user.findUnique({
+const getCachedUSer = cache((slug) => {
+  return prisma.user.findUnique({
     where: {
-      slug: params.slug,
+      slug,
     },
     include: {
       role: true,
     },
-  });
+  })
+})
+
+export default async function StaffMember({ params }) {
+  const user = await getCachedUSer(params.slug);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">

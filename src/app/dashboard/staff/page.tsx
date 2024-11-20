@@ -18,9 +18,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { createUser } from "@/actions/actions";
+import StaffMemberForm from "./form";
 
 export default async function Staff() {
+  
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -83,27 +84,7 @@ export default async function Staff() {
       {/* Staff members list ends */}
 
       {/* Form to add new staff member starts */}
-      <form action={createUser} className="flex flex-col gap-y-2 w-[500px]">
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre"
-          className="px-2 py-1 rounded-sm"
-        />
-        <select name="roleId" className="px-2 py-1 rounded-sm">
-          {roles.map((role) => (
-            <option key={role.id} value={role.id}>
-              {role.name.toLocaleUpperCase()}
-            </option>
-          ))}
-        </select>
-        <button
-          type="submit"
-          className="bg-blue-500 py-2 text-white rounded-sm"
-        >
-          Agregar empleado
-        </button>
-      </form>
+      <StaffMemberForm roles={roles} />
       {/* Form ends */}
     </MaxWidthWrapper>
   );
