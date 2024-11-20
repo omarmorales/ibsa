@@ -2,9 +2,12 @@ import prisma from "@/lib/db";
 import { User } from "lucide-react";
 
 export default async function StaffMember({ params }) {
-  const staffMember = await prisma.staff.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       slug: params.slug,
+    },
+    include: {
+      role: true,
     },
   });
 
@@ -24,13 +27,13 @@ export default async function StaffMember({ params }) {
         </div>
 
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-800">{staffMember?.name}</h2>
-          <p className="text-gray-600">{staffMember?.email}</p>
+          <h2 className="text-2xl font-semibold text-gray-800">{user?.name}</h2>
+          <p className="text-gray-600">{user?.email}</p>
 
           {/* Badge for the user role */}
           <div className="inline-block mt-2">
             <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
-              {staffMember?.role?.toLocaleUpperCase()}
+              {user?.role?.name.toLocaleUpperCase()}
             </span>
           </div>
         </div>
