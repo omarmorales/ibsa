@@ -49,35 +49,7 @@ export default async function Staff() {
 
       {/* Staff members list starts */}
       <UserTable users={users} roles={roles} />
-      {/* <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">ID</TableHead>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Rol</TableHead>
-            <TableHead>Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.id}</TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>
-                <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
-                  {user.role.name.toLocaleUpperCase()}
-                </span>
-              </TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table> */}
       {/* Staff members list ends */}
-
-      {/* Form to add new staff member starts */}
-      {/* <StaffMemberForm roles={roles} /> */}
-      {/* Form ends */}
     </MaxWidthWrapper>
   );
 }

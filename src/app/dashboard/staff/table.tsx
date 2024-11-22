@@ -23,6 +23,9 @@ export default function UserTable({ users, roles }: TableProps) {
   const handleEdit = (user: User) => {
     setSelectedUser(user);
   };
+  const handleUserReset = () => {
+    setSelectedUser(undefined);
+  };
 
   return (
     <>
@@ -59,7 +62,7 @@ export default function UserTable({ users, roles }: TableProps) {
       </Table>
 
       {/* Form to add new staff member starts */}
-      <StaffMemberForm roles={roles} user={selectedUser} />
+      <StaffMemberForm roles={roles} user={selectedUser} onUserReset={handleUserReset} />
       {/* Form ends */}
     </>
   );
