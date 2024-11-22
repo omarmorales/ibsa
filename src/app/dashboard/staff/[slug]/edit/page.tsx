@@ -11,10 +11,10 @@ const getCachedUSer = cache((slug) => {
     include: {
       role: true,
     },
-  })
-})
+  });
+});
 
-export default async function StaffMember({ params }) {
+export default async function UpdateStaffMember({ params }) {
   const user = await getCachedUSer(params.slug);
 
   if (!user) {

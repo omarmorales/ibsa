@@ -9,16 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-import StaffMemberForm from "./form";
+import UserTable from "./table";
 
 export default async function Staff() {
   
@@ -57,7 +48,8 @@ export default async function Staff() {
       <p>Total de trabajadores: ({usersCount})</p>
 
       {/* Staff members list starts */}
-      <Table>
+      <UserTable users={users} roles={roles} />
+      {/* <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">ID</TableHead>
@@ -80,11 +72,11 @@ export default async function Staff() {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table> */}
       {/* Staff members list ends */}
 
       {/* Form to add new staff member starts */}
-      <StaffMemberForm roles={roles} />
+      {/* <StaffMemberForm roles={roles} /> */}
       {/* Form ends */}
     </MaxWidthWrapper>
   );
