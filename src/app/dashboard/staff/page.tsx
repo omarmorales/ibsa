@@ -18,6 +18,7 @@ export default async function Staff() {
       id: true,
       name: true,
       role: true,
+      slug: true,
     },
     take: 10,
   });

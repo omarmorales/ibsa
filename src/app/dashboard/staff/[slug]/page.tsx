@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import { User } from "lucide-react";
 import { unstable_cache as cache } from "next/cache";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 const getCachedUSer = cache((slug) => {
   return prisma.user.findUnique({
@@ -64,9 +65,9 @@ export default async function StaffMember({ params }) {
         </div> */}
 
         <div className="mt-6">
-          <button className="w-full bg-blue-500 text-white py-2 rounded-lg shadow hover:bg-blue-600 transition duration-300">
+        <Link href={`/dashboard/staff/${user.slug}/edit`} className="w-full bg-blue-500 text-white py-2 rounded-lg shadow hover:bg-blue-600 transition duration-300 text-center block">
             Edit Profile
-          </button>
+          </Link>
         </div>
       </div>
     </div>

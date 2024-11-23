@@ -63,6 +63,7 @@ export async function deleteStaffMember(id: string) {
 export async function createOrUpdateUser(formData: FormData, userId?: string) {
   const name = formData.get("name") as string;
   const roleId = formData.get("roleId") as string;
+  let user;
 
   if (!name || !roleId) {
     throw new Error("Both name and role are required.");
@@ -73,7 +74,7 @@ export async function createOrUpdateUser(formData: FormData, userId?: string) {
   try {
     if (userId) {
       // Update user if userId is provided
-      await prisma.user.update({
+      user = await prisma.user.update({
         where: { id: userId },
         data: {
           name,
@@ -87,7 +88,7 @@ export async function createOrUpdateUser(formData: FormData, userId?: string) {
       });
     } else {
       // Create a new user if no userId is provided
-      await prisma.user.create({
+      user = await prisma.user.create({
         data: {
           name,
           slug,
@@ -99,9 +100,9 @@ export async function createOrUpdateUser(formData: FormData, userId?: string) {
         },
       });
     }
-
     // Revalidate the path to reflect the changes
     revalidatePath("/dashboard/staff");
+    return user;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {

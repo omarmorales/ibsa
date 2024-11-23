@@ -1,37 +1,56 @@
-// not receibing role value
 "use client";
 import { useEffect, useState } from "react";
 import { createOrUpdateUser } from "@/actions/actions";
 import { Role } from "@/types/role";
 import { User } from "@/types/user";
 import { useRef } from "react";
+import { useRouter } from "next/navigation";
 
 interface StaffMemberFormProps {
   roles: Role[];
   user?: User;
-  onUserReset: () => void; 
+  onUserUpdate?: () => void;
+  redirectToProfile?: boolean;
 }
 
-export default function StaffMemberForm({ roles, user, onUserReset }: StaffMemberFormProps) {
+export default function StaffMemberForm({
+  roles,
+  user,
+  onUserUpdate,
+  redirectToProfile = false,
+}: StaffMemberFormProps) {
   const [selectedRoleId, setSelectedRoleId] = useState(user?.role?.id || "");
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setSelectedRoleId(user?.role?.id || "");
   }, [user]);
 
   const handleAction = async (formData: FormData) => {
-    await createOrUpdateUser(formData, user?.id);
+    try {
+      const createdOrUpdatedUser = await createOrUpdateUser(formData, user?.id);
 
-    if (formRef.current) {
-      formRef.current.reset(); // Clear the form fields
-    }
+      // Clear the form fields after successful creation
+      if (formRef.current) {
+        formRef.current.reset();
+      }
 
-    setSelectedRoleId(""); // Reset the role selection
+      // Reset role selection
+      setSelectedRoleId("");
 
-    if (user) {
-      // If an update was performed, reset the user to switch to "create" mode
-      onUserReset();
+      // Notify parent component if user was updated
+      if (user && onUserUpdate) {
+        onUserUpdate();
+      }
+
+      // Redirect to the profile page if needed
+      if (redirectToProfile && createdOrUpdatedUser?.slug) {
+        router.push(`/dashboard/staff/${createdOrUpdatedUser.slug}`);
+      }
+    } catch (error) {
+      console.error("Error creating or updating user:", error);
+      // Handle error (e.g., show a toast or error message)
     }
   };
 
@@ -39,7 +58,7 @@ export default function StaffMemberForm({ roles, user, onUserReset }: StaffMembe
     <form
       ref={formRef}
       action={(formData) => handleAction(formData)}
-      className="flex flex-col gap-y-2 w-[500px]"
+      className="flex flex-col gap-y-2 w-full max-w-full"
     >
       <input
         type="text"

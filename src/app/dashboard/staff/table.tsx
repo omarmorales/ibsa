@@ -23,7 +23,7 @@ export default function UserTable({ users, roles }: TableProps) {
   const handleEdit = (user: User) => {
     setSelectedUser(user);
   };
-  const handleUserReset = () => {
+  const handleUserUpdate = () => {
     setSelectedUser(undefined);
   };
 
@@ -34,6 +34,7 @@ export default function UserTable({ users, roles }: TableProps) {
           <TableRow>
             <TableHead className="w-[100px]">ID</TableHead>
             <TableHead>Nombre</TableHead>
+            <TableHead>Slug</TableHead>
             <TableHead>Rol</TableHead>
             <TableHead>Acciones</TableHead>
           </TableRow>
@@ -43,6 +44,7 @@ export default function UserTable({ users, roles }: TableProps) {
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.name}</TableCell>
+              <TableCell>{user.slug}</TableCell>
               <TableCell>
                 <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
                   {user.role?.name.toLocaleUpperCase()}
@@ -62,7 +64,7 @@ export default function UserTable({ users, roles }: TableProps) {
       </Table>
 
       {/* Form to add new staff member starts */}
-      <StaffMemberForm roles={roles} user={selectedUser} onUserReset={handleUserReset} />
+      <StaffMemberForm roles={roles} user={selectedUser} onUserUpdate={handleUserUpdate} />
       {/* Form ends */}
     </>
   );

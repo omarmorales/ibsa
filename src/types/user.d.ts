@@ -2,12 +2,11 @@ export interface User {
   id?: string;
   name: string;
   slug?: string;
-  email?: string;
-  password?: number;
-  phone?: number;
-  address?: number;
-  description?: string;
-  price?: number;
+  email?: string | null;
+  password?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  description?: string | null;
   role?: {
     id: string;
     name: string;
