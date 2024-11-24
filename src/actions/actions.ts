@@ -54,10 +54,31 @@ export async function updateUser(formData: FormData, id: string) {
   }
 }
 
-export async function deleteStaffMember(id: string) {
-  await prisma.user.delete({
-    where: { id },
-  });
+export async function deleteUser(id: string) {
+  if (!id || typeof id !== "string") {
+    return { success: false, message: "Invalid user ID" };
+  }
+
+  try {
+    const user = await prisma.user.delete({
+      where: { id },
+    });
+    console.log(`User with ID ${id} successfully deleted`);
+    revalidatePath("/dashboard/staff");
+    return { success: true, message: `User ${user.name} successfully deleted` };
+  } catch (error) {
+    console.error(`Failed to delete user with ID ${id}:`, error);
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        // Record not found
+        return { success: false, message: "User not found" };
+      }
+    }
+
+    revalidatePath("/dashboard/staff");
+    return { success: false, message: "An unexpected error occurred" };
+  }
 }
 
 export async function createOrUpdateUser(formData: FormData, userId?: string) {
