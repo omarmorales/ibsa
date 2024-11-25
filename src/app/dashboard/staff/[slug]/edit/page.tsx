@@ -15,7 +15,11 @@ const getCachedUSer = cache((slug) => {
   });
 });
 
-export default async function UpdateStaffMember({ params }) {
+interface Params {
+  slug: string;
+}
+
+export default async function UpdateStaffMember({ params }: { params: { slug: string } }) {
   const user = await getCachedUSer(params.slug);
 
   const roles = await prisma.role.findMany({
