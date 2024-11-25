@@ -135,3 +135,32 @@ export async function createOrUpdateUser(formData: FormData, userId?: string) {
     throw error;
   }
 }
+
+export async function registerUserAttendance(userId: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        Attendances: {
+          create: {
+            date: new Date(),
+          },
+        }
+      }
+    });
+    revalidatePath("/dashboard/staff/attendance");
+  } catch (error) {
+    console.error("Failed to create attendance record:", error);
+  }
+}
+
+export async function deleteAttendanceRecord(attendanceId: string) {
+  try {
+    await prisma.attendance.delete({
+      where: { id: attendanceId },
+    });
+    revalidatePath("/dashboard/staff/attendance");
+  } catch (error) {
+    console.error("Failed to delete attendance record:", error);
+  }
+}

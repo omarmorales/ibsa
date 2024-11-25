@@ -137,7 +137,7 @@ model Role {
 
 model Attendance {
   id        String    @id @default(cuid()) @map("_id")
-  date      DateTime
+  date      DateTime?
   arrival   DateTime?
   lunch     DateTime?
   departure DateTime?
@@ -147,7 +147,7 @@ model Attendance {
   updatedAt DateTime  @updatedAt
 
   // Relations
-  staff User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 // npx prisma db push

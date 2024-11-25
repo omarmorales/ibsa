@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import AttendanceTable from "./table";
 
 export default async function Attendance() {
   const today = new Date();
@@ -19,85 +20,27 @@ export default async function Attendance() {
       slug: true,
       Attendances: {
         where: {
-          arrival: {
+          date: {
             gte: startOfDay,
             lte: endOfDay,
           },
-        }
+        },
       },
     },
-    take: 10,
   });
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-        {/* Title */}
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-8">
+      <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-md p-8">
+        {/* Header */}
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">
           Registro de Asistencia
         </h1>
-        {/* Subtitle */}
-        <p className="text-gray-600 mb-6">{formattedDate}</p>
+        <p className="text-gray-600 mb-8">{formattedDate}</p>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border border-gray-200">
-            {/* Table Header */}
-            <thead className="bg-gray-100 text-left">
-              <tr>
-                <th className="px-6 py-3 text-sm font-medium text-gray-700 border-b">
-                  Nombre
-                </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-700 border-b">
-                  Hora de Entrada
-                </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-700 border-b">
-                  Hora de Comida
-                </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-700 border-b">
-                  Hora de Salida
-                </th>
-              </tr>
-            </thead>
-
-            {/* Table Body */}
-            <tbody>
-              {users.map((user, index) => (
-                <tr
-                  key={user.id}
-                  className={`${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  } hover:bg-gray-100`}
-                >
-                  <td className="px-6 py-4 text-gray-800 border-b">
-                    {user.name}
-                  </td>
-                  <td className="px-6 py-4 text-gray-800 border-b">
-                    <input
-                      type="time"
-                      defaultValue="08:00"
-                      className="block w-full px-2 py-1 text-gray-800 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </td>
-                  <td className="px-6 py-4 text-gray-800 border-b">
-                    <input
-                      type="time"
-                      defaultValue="12:00"
-                      className="block w-full px-2 py-1 text-gray-800 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </td>
-                  <td className="px-6 py-4 text-gray-800 border-b">
-                    <input
-                      type="time"
-                      defaultValue="16:00"
-                      className="block w-full px-2 py-1 text-gray-800 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <AttendanceTable users={users} />
+       
       </div>
     </div>
   );

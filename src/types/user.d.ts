@@ -11,4 +11,5 @@ export interface User {
     id: string;
     name: string;
   } 
+  Attendances?: Attendance[];
 }
