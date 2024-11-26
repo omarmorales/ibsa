@@ -1,5 +1,13 @@
 import prisma from "@/lib/db";
 import AttendanceTable from "./table";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default async function Attendance() {
   const today = new Date();
@@ -31,6 +39,23 @@ export default async function Attendance() {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-8">
+      {/* Breadcrumb starts */}
+      <Breadcrumb className="mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard/staff">Personal</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Registro de asistencia</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      {/* Breadcrumb ends */}
       <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-md p-8">
         {/* Header */}
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
